@@ -37,7 +37,7 @@ bl_info = {
     "category"   : "Object",
     "location"   : "3D View >> Tools",
     "wiki_url"   : "",
-    "tracker_url": "",
+    "tracker_url": "https://github.com/pitchipoy/pitchipoy_utilities/blob/master/pitchi_utils.py",
     "description": "Various utilities used for production"
 }
 
