@@ -113,15 +113,13 @@ class batch_rename( bpy.types.Operator ):
     bl_description = "Rename selected objects based on the specified base name"
     bl_options     = {'REGISTER', 'UNDO' }
 
-    base_name = bpy.props.StringProperty(name="base_name", default="object")
-
     @classmethod
     def poll( self, context ):
         return True
 
     def execute( self, context):
         i = 0
-        base = self.base_name
+        base = context.scene.rename_props.base_name
         for obj in context.objects:
             if   i == 0:
                 name = base
@@ -144,10 +142,13 @@ class batch_rename( bpy.types.Operator ):
                 
         return {'FINISHED'}
 
+class rename_props( bpy.types.PropertyGroup ):
+    base_name = bpy.props.StringProperty(name="base_name", default="object")
+
 def register():
     bpy.utils.register_module(__name__)
     bpy.types.Scene.rename_props = bpy.props.PointerProperty( 
-        type = "batch_rename" )
+        type = "rename_props" )
     
 def unregister():
     bpy.utils.unregister_module(__name__)
