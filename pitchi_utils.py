@@ -52,10 +52,14 @@ class random_mat_panel(bpy.types.Panel):
 
     def draw( self, context) :
         layout = self.layout
+        
+        rename_props = context.Scene.batch_rename_props
+        
         layout.operator( 'object.apply_modifiers' )
         layout.operator( 'object.delete_vgroups'  )
 
         box = layout.box()
+        box.prop( rename_props, "base_name" )
         box.operator( 'object.batch_rename' )
         
 class apply_all_modifiers( bpy.types.Operator ):
@@ -105,7 +109,7 @@ class delete_all_vertex_groups( bpy.types.Operator ):
 class batch_rename( bpy.types.Operator ):
     """ Renames all selected objects based on the specified base name """
     bl_idname      = "object.batch_rename"
-    bl_label       = "Rename all objects"
+    bl_label       = "Rename selected objects"
     bl_description = "Rename selected objects based on the specified base name"
     bl_options     = {'REGISTER', 'UNDO' }
 
@@ -130,7 +134,7 @@ class batch_rename( bpy.types.Operator ):
                 match      = re.search( pattern, div_by_1k )
                 num_suffix = match.groups(0)[0]
 
-                name = base + '_' + num_suffix
+                name = bbpy.types.Scene.face_assigner = bpy.props.PointerProperty(type=rand_mat_assigner)ase + '_' + num_suffix
 
             # Set the name of the object and the object's data (mesh)
             obj.name      = name
@@ -142,6 +146,7 @@ class batch_rename( bpy.types.Operator ):
 
 def register():
     bpy.utils.register_module(__name__)
+    bpy.types.Scene.batch_rename_props = bpy.props.PointerProperty(type=batch_rename)
     
 def unregister():
     bpy.utils.unregister_module(__name__)
