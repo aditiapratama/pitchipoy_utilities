@@ -53,7 +53,7 @@ class random_mat_panel(bpy.types.Panel):
     def draw( self, context) :
         layout = self.layout
         
-        rename_props = context.Scene.batch_rename_props
+        rename_props = context.scene.batch_rename_props
         
         layout.operator( 'object.apply_modifiers' )
         layout.operator( 'object.delete_vgroups'  )
