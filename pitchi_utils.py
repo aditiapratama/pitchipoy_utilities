@@ -36,12 +36,13 @@ bl_info = {
     "blender"    : (2, 66, 0),
     "category"   : "Object",
     "location"   : "3D View >> Tools",
-    "wiki_url"   : "",
+    "wiki_url"   : "https://github.com/pitchipoy/pitchipoy_utilities/wiki",
     "tracker_url": "https://github.com/pitchipoy/pitchipoy_utilities/blob/master/pitchi_utils.py",
     "description": "Various utilities used for production"
 }
 
 import bpy
+import re
 
 class random_mat_panel(bpy.types.Panel):
     bl_idname      = "PitchiUtilsPanel"
@@ -96,6 +97,44 @@ class delete_all_vertex_groups( bpy.types.Operator ):
     def execute( self, context):
         bpy.ops.object.vertex_group_remove(all=True)
         
+        return {'FINISHED'}
+
+class batch_rename( bpy.types.Operator ):
+    """ Renames all selected objects based on the specified base name """
+    bl_idname      = "object.batch_rename"
+    bl_label       = "Rename all objects"
+    bl_description = "Rename selected objects based on the specified base name"
+    bl_options     = {'REGISTER', 'UNDO' }
+
+    base_name = bpy.props.StringProperty(name="base_name", default="object")
+
+    @classmethod
+    def poll( self, context ):
+        return True
+
+    def execute( self, context):
+        i = 0
+        base = self.base_name
+        for obj in context.objects:
+            if   i == 0:
+                name = base
+            elif i > 999:
+                name = base + '_' + str(i)
+            else:
+                # Add zeros before the number
+                div_by_1k  = str( float( i / 1000 ) )
+                pattern    = r'\d\.(\d+)'
+                match      = re.search( pattern, div_by_1k )
+                num_suffix = match.groups(0)[0]
+
+                name = base + '_' + num_suffix
+
+            # Set the name of the object and the object's data (mesh)
+            obj.name      = name
+            obj.data.name = name
+            
+            i += 1
+                
         return {'FINISHED'}
 
 def register():
