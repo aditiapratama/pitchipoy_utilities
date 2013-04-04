@@ -53,7 +53,7 @@ class random_mat_panel(bpy.types.Panel):
     def draw( self, context) :
         layout = self.layout
         
-        rename_props = context.scene.batch_rename_props
+        rename_props = context.scene.rename_props
         
         layout.operator( 'object.apply_modifiers' )
         layout.operator( 'object.delete_vgroups'  )
@@ -146,7 +146,8 @@ class batch_rename( bpy.types.Operator ):
 
 def register():
     bpy.utils.register_module(__name__)
-    bpy.types.Scene.batch_rename_props = bpy.props.PointerProperty(type=batch_rename)
+    bpy.types.Scene.rename_props = bpy.props.PointerProperty( 
+        type = "batch_rename" )
     
 def unregister():
     bpy.utils.unregister_module(__name__)
