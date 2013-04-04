@@ -54,6 +54,9 @@ class random_mat_panel(bpy.types.Panel):
         layout = self.layout
         layout.operator( 'object.apply_modifiers' )
         layout.operator( 'object.delete_vgroups'  )
+
+        box = layout.box()
+        box.operator( 'object.batch_rename' )
         
 class apply_all_modifiers( bpy.types.Operator ):
     """ Applies all the modifiers in the object's stack in order """
