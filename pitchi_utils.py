@@ -134,7 +134,7 @@ class batch_rename( bpy.types.Operator ):
                 match      = re.search( pattern, div_by_1k )
                 num_suffix = match.groups(0)[0]
 
-                name = bbpy.types.Scene.face_assigner = bpy.props.PointerProperty(type=rand_mat_assigner)ase + '_' + num_suffix
+                name = base + '_' + num_suffix
 
             # Set the name of the object and the object's data (mesh)
             obj.name      = name
