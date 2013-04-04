@@ -33,7 +33,7 @@ bl_info = {
     "name"       : "Pitchipoy Utilities",
     "author"     : "Tamir Lousky",
     "version"    : (0, 0, 1),
-    "blender"    : (2, 66, 3),
+    "blender"    : (2, 66, 0),
     "category"   : "Object",
     "location"   : "3D View >> Tools",
     "wiki_url"   : "",
@@ -51,7 +51,8 @@ class random_mat_panel(bpy.types.Panel):
 
     def draw( self, context) :
         layout = self.layout
-        layout.operator("object.apply_modifiers")
+        layout.operator( 'object.apply_modifiers' )
+        layout.operator( 'object.delete_vgroups'  )
         
 class apply_all_modifiers( bpy.types.Operator ):
     """ Applies all the modifiers in the object's stack in order """
@@ -72,6 +73,28 @@ class apply_all_modifiers( bpy.types.Operator ):
         # Iterate over the object's modifiers and apply them one at a time
         for m in context.object.modifiers:
             bpy.ops.object.modifier_apply(modifier = m.name )
+        
+        return {'FINISHED'}
+
+class delete_all_vertex_groups( bpy.types.Operator ):
+    """ Deletes all the mesh object's vertex groups """
+    bl_idname      = "object.delete_vgroups"
+    bl_label       = "Delete all Vertex Groups"
+    bl_description = "Delete all the mesh object's vertex groups"
+    bl_options     = {'REGISTER', 'UNDO' }
+
+    @classmethod
+    def poll( self, context ):
+        # If the object is of the correct type 
+        if context.object.type == 'MESH':
+            # and it has at least 1 vgroup 
+            if context.object.vertex_groups:
+                # then enable this operator
+                return True
+        return False
+
+    def execute( self, context):
+        bpy.ops.object.vertex_group_remove(all=True)
         
         return {'FINISHED'}
 
