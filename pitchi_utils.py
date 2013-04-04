@@ -120,7 +120,7 @@ class batch_rename( bpy.types.Operator ):
     def execute( self, context):
         i = 0
         base = context.scene.rename_props.base_name
-        for obj in context.objects:
+        for obj in context.selected_objects:
             if   i == 0:
                 name = base
             elif i > 999:
@@ -148,7 +148,7 @@ class rename_props( bpy.types.PropertyGroup ):
 def register():
     bpy.utils.register_module(__name__)
     bpy.types.Scene.rename_props = bpy.props.PointerProperty( 
-        type = "rename_props" )
+        type = rename_props )
     
 def unregister():
     bpy.utils.unregister_module(__name__)
