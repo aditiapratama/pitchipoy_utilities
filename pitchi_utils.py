@@ -32,7 +32,7 @@
 bl_info = {    
     "name"       : "Pitchipoy Utilities",
     "author"     : "Tamir Lousky",
-    "version"    : (0, 0, 1),
+    "version"    : (0, 0, 3),
     "blender"    : (2, 66, 0),
     "category"   : "Object",
     "location"   : "3D View >> Tools",
@@ -43,6 +43,7 @@ bl_info = {
 
 import bpy
 import re
+
 
 class random_mat_panel(bpy.types.Panel):
     bl_idname      = "PitchiUtilsPanel"
@@ -60,7 +61,10 @@ class random_mat_panel(bpy.types.Panel):
 
         box = layout.box()
         box.prop( rename_props, "base_name" )
-        box.operator( 'object.batch_rename' )
+
+        box.operator( 'object.batch_rename'      )
+        box.operator( 'object.reset_constraints' )
+        
         
 class apply_all_modifiers( bpy.types.Operator ):
     """ Applies all the modifiers in the object's stack in order """
@@ -101,6 +105,51 @@ class apply_all_modifiers( bpy.types.Operator ):
         
         return {'FINISHED'}
 
+
+class reset_constraints( bpy.types.Operator ):
+    """ Resets all Damped Track constraints on the active armature's bones """
+    bl_idname      = "object.reset_constraints"
+    bl_label       = "Reset all constaints on bones"
+    bl_description = "Resets all constraints on the active armature's bones"
+    bl_options     = {'REGISTER', 'UNDO' }
+
+    @classmethod
+    def poll( self, context ):
+        relevant_types = [ 'ARMATURE' ]
+        
+        correct_type = context.object.type in relevant_types
+        correct_mode = context.object.mode == 'POSE'
+        
+        # If the object is of the correct type, enable this operator
+        return correct_type and correct_mode
+
+    def execute( self, context):
+        constraint_to_reset = 'Stretch To'
+        
+        dt_bones = []
+        
+        # Store the names of all the bones that has the relevant constraint
+        for b in context.object.pose.bones:
+            if constraint_to_reset in [ c.name for c in b.constraints ]:
+                dt_bones.append( b.name )
+
+        # Iterate over the bones we need to reset
+        for bname in dt_bones:
+            bone = context.object.data.bones[ bname ]
+
+            # Select and activate the current bone
+            bone.select = True
+            context.object.data.bones.active = bone
+            
+            # Reset the stretch-to constraint
+            bpy.ops.constraint.stretchto_reset(
+                constraint = constraint_to_reset,
+                owner      = 'BONE'
+            )
+            
+        return {'FINISHED'}
+
+
 class delete_all_vertex_groups( bpy.types.Operator ):
     """ Deletes all the mesh object's vertex groups """
     bl_idname      = "object.delete_vgroups"
@@ -122,6 +171,7 @@ class delete_all_vertex_groups( bpy.types.Operator ):
         bpy.ops.object.vertex_group_remove(all=True)
         
         return {'FINISHED'}
+
 
 class batch_rename( bpy.types.Operator ):
     """ Renames all selected objects based on the specified base name """
@@ -159,8 +209,10 @@ class batch_rename( bpy.types.Operator ):
                 
         return {'FINISHED'}
 
+
 class rename_props( bpy.types.PropertyGroup ):
     base_name = bpy.props.StringProperty(name="base_name", default="object")
+
 
 def register():
     bpy.utils.register_module(__name__)
