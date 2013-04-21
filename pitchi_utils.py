@@ -77,10 +77,27 @@ class apply_all_modifiers( bpy.types.Operator ):
         return context.object.type in modifiable_objects
 
     def execute( self, context):
+        modifiable_objects = [ 'MESH', 'CURVE', 'SURFACE', 'FONT', 'LATTICE' ]
         
-        # Iterate over the object's modifiers and apply them one at a time
-        for m in context.object.modifiers:
-            bpy.ops.object.modifier_apply(modifier = m.name )
+        selected_objects = [ obj.name for obj in context.selected_objects ]
+        
+        # Iterate over all selected objects
+        for name in selected_objects:
+            # Reference object
+            obj = context.scene.objects[name]
+
+            # If the current object is of the right type
+            if obj.type in modifiable_objects:
+                # Deselect all objects
+                bpy.ops.object.select_all(action='TOGGLE')
+                
+                # Select and activate current object
+                obj.select                   = True
+                context.scene.objects.active = obj
+
+                # Iterate over the object's modifiers and apply them one at a time
+                for m in obj.modifiers:
+                    bpy.ops.object.modifier_apply(modifier = m.name )
         
         return {'FINISHED'}
 
